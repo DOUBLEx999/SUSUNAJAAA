@@ -217,35 +217,47 @@
 
   <script>
   function checkAnswers() {
-    const questions = document.querySelectorAll('.question');
-    let correctCount = 0;
-    let totalQuestions = questions.length;
+  const questions = document.querySelectorAll('.question');
+  let correctCount = 0;
+  let totalQuestions = questions.length;
 
-    questions.forEach(q => {
-      const input = q.querySelector('input');
-      const userAnswer = input.value.trim();
-      const correctAnswer = q.getAttribute('data-answer').trim();
-
-      input.classList.remove('correct-answer', 'wrong-answer');
-
-      if (userAnswer === correctAnswer) {
-        correctCount++;
-        input.classList.add('correct-answer');
-      } else {
-        input.classList.add('wrong-answer');
+  questions.forEach(q => {
+    let userAnswer = '';
+    let input = null;
+    const radio = q.querySelector('input[type="radio"]:checked');
+    if (radio) {
+      userAnswer = radio.value.trim();
+      input = radio;
+    } else {
+      const textInput = q.querySelector('input[type="text"]');
+      if (textInput) {
+        userAnswer = textInput.value.trim();
+        input = textInput;
       }
+    }
+    const correctAnswer = q.getAttribute('data-answer').trim();
+    q.querySelectorAll('input').forEach(inp => {
+      inp.classList.remove('correct-answer', 'wrong-answer');
     });
 
-    const result = document.getElementById('result');
-    const image = document.getElementById('congratsImage');
-
-    if (correctCount === totalQuestions) {
-      showSuccessPage();
+    if (userAnswer === correctAnswer) {
+      correctCount++;
+      if (input) input.classList.add('correct-answer');
     } else {
-      result.innerHTML = `<div class="error">😅 คุณตอบถูก ${correctCount} จาก ${totalQuestions} ข้อ<br>ลองใหม่อีกครั้งนะ!</div>`;
-      if (image) image.classList.add('hidden');
+      if (input) input.classList.add('wrong-answer');
     }
+  });
+
+  const result = document.getElementById('result');
+  const image = document.getElementById('congratsImage');
+
+  if (correctCount === totalQuestions) {
+    showSuccessPage();
+  } else {
+    result.innerHTML = `<div class="error">😅 คุณตอบถูก ${correctCount} จาก ${totalQuestions} ข้อ<br>ลองใหม่อีกครั้งนะ!</div>`;
+    if (image) image.classList.add('hidden');
   }
+}
 
   function showSuccessPage() {
     document.body.innerHTML = `
